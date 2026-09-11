@@ -79,6 +79,28 @@
           margin-bottom:14px; box-shadow:0 5px 18px rgba(20,34,29,.04); }
   .card h3 { margin:0 0 4px; font-size:15px; }
   .card-head { display:flex; justify-content:space-between; gap:14px; align-items:flex-start; }
+  .verification-section { margin-bottom:20px; padding:18px; border:1px solid #bfd7cc;
+                          border-radius:16px; background:#edf6f1; }
+  .verification-heading { margin-bottom:13px; }
+  .verification-heading h3 { margin:0; font-size:17px; }
+  .verification-kicker { margin:0 0 2px; color:var(--brand); font-size:10.5px;
+                         font-weight:850; letter-spacing:.08em; text-transform:uppercase; }
+  .verification-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px; }
+  .verification-card { padding:15px; border:1px solid #d4e5dd; border-radius:12px;
+                       background:var(--surface); box-shadow:0 5px 18px rgba(20,34,29,.04); }
+  .verification-card h4 { margin:0; font-size:14px; }
+  .verification-card .note { margin:2px 0 0; font-size:11px; }
+  .verification-facts { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:7px;
+                        margin:12px 0; }
+  .verification-facts div { min-width:0; padding:7px 8px; border-radius:8px; background:#f4f7f4; }
+  .verification-facts span, .next-action span { display:block; color:var(--muted); font-size:9.5px;
+                                                font-weight:800; letter-spacing:.05em;
+                                                text-transform:uppercase; }
+  .verification-facts strong { display:block; margin-top:1px; font-size:11.5px; }
+  .next-action { padding:9px 10px; border-left:3px solid var(--brand); border-radius:6px;
+                 background:#f7faf8; }
+  .next-action strong { display:block; margin-top:2px; font-size:11.5px; font-weight:650; }
+  .verification-note { margin:12px 0 0; color:#305c4d; font-size:11.5px; }
   .facts { display:flex; flex-wrap:wrap; gap:8px; margin:13px 0; }
   .fact { padding:7px 9px; border-radius:8px; background:#f4f7f4; color:var(--muted); font-size:11.5px; }
   .fact strong { color:var(--ink); }
@@ -115,6 +137,8 @@
     .stats { grid-template-columns:repeat(2,1fr); }
     .stat:last-child { grid-column:1/-1; }
     .page-heading, .card-head { align-items:flex-start; flex-direction:column; }
+    .verification-grid { grid-template-columns:1fr; }
+    .verification-facts { grid-template-columns:repeat(2,minmax(0,1fr)); }
   }
 </style>
 </head>
@@ -127,10 +151,10 @@
   <div class="event-chip">Northbay Power · psps-demo-2026-09</div>
 </header>
 <nav aria-label="Operator sections">
-  <a href="/CALLE-AI/board" class="on">Contact ladder</a>
-  <a href="/CALLE-AI/review" class="">Human review</a>
-  <a href="/CALLE-AI/support" class="">Support desk</a>
-  <a href="/CALLE-AI/reports" class="">Evidence report</a>
+  <a href="/board" class="on">Contact ladder</a>
+  <a href="/review" class="">Human review</a>
+  <a href="/support" class="">Support desk</a>
+  <a href="/reports" class="">Evidence report</a>
 </nav>
 <main>
   <section class="hero" aria-labelledby="mission-title">
@@ -154,14 +178,67 @@
 <div class="page-heading"><div><h2>Contact ladder</h2>
 <p class="sub">One row per enrolled contact. Numbers are masked; the raw customer number never leaves the contact record.</p></div>
 <span class="mode">updates every 5s</span></div>
-<div hx-get="/CALLE-AI/board/rows" hx-trigger="every 5s" hx-swap="innerHTML">
+
+<section id="live-verification" class="verification-section" aria-labelledby="live-verification-title">
+  <div class="card-head verification-heading">
+    <div>
+      <p class="verification-kicker">CALL-E runtime checked on a real phone</p>
+      <h3 id="live-verification-title">Redacted live CALL-E verification</h3>
+      <p class="sub">The CALL-E account view showed conversation detail. PositiveContact
+        turns its structured result into the operational summary below.</p>
+    </div>
+    <span class="pill good">2 owner-consented calls</span>
+  </div>
+  <div class="verification-grid">
+
+    <article class="verification-card" data-verification-id="live-check-01">
+      <div class="card-head">
+        <div><h4>Verification call 1</h4><p class="note">24 conversation turns · 0.92 high confidence</p></div>
+        <span class="pill good">CALL-E completed</span>
+      </div>
+      <div class="verification-facts" aria-label="Verification call 1 structured result">
+        <div><span>Reached</span><strong>Live person</strong></div>
+        <div><span>Notice heard</span><strong>Yes</strong></div>
+        <div><span>Support asked</span><strong>Medical question</strong></div>
+        <div><span>Safe category</span><strong>Not captured</strong></div>
+        <div><span>Timing</span><strong>Not captured</strong></div>
+        <div><span>Provider consent</span><strong>Not captured</strong></div>
+        <div><span>Emergency risk</span><strong>Not captured</strong></div>
+      </div>
+      <div class="next-action"><span>PositiveContact route · Human review</span><strong>Human callback. No provider call was opened because the support category, timing and provider-contact consent were incomplete.</strong></div>
+    </article>
+
+    <article class="verification-card" data-verification-id="live-check-02">
+      <div class="card-head">
+        <div><h4>Verification call 2</h4><p class="note">43 conversation turns · 0.95 high confidence</p></div>
+        <span class="pill good">CALL-E completed</span>
+      </div>
+      <div class="verification-facts" aria-label="Verification call 2 structured result">
+        <div><span>Reached</span><strong>Live person</strong></div>
+        <div><span>Notice heard</span><strong>Yes</strong></div>
+        <div><span>Support asked</span><strong>Medical question</strong></div>
+        <div><span>Safe category</span><strong>Powered equipment</strong></div>
+        <div><span>Timing</span><strong>Before outage</strong></div>
+        <div><span>Provider consent</span><strong>Yes</strong></div>
+        <div><span>Emergency risk</span><strong>No</strong></div>
+      </div>
+      <div class="next-action"><span>PositiveContact route · Human review</span><strong>Human review, then one identity-free equipment-provider availability call may be authorized. No provider call has been placed.</strong></div>
+    </article>
+
+  </div>
+  <p class="verification-note"><strong>Privacy boundary:</strong> no name, phone number,
+    transcript, call ID or health detail is published. These validation calls are separate
+    from the fictional fixture rows and are excluded from every metric below.</p>
+</section>
+
+<div hx-get="/board/rows" hx-trigger="every 5s" hx-swap="innerHTML">
   <div class="table-wrap"><table>
   <thead>
     <tr><th>Contact</th><th>Name</th><th>Number</th><th>Locale</th><th>Step</th>
         <th>State</th><th>Reason</th><th>Next step</th></tr>
   </thead>
   <tbody>
-  
+
     <tr>
       <td><code>pc-001</code></td>
       <td>Maria</td>
@@ -172,7 +249,7 @@
       <td class="note">live_human_acknowledged_with_transcript_evidence</td>
       <td class="note">-</td>
     </tr>
-  
+
     <tr>
       <td><code>pc-002</code></td>
       <td>James</td>
@@ -183,7 +260,7 @@
       <td class="note">live_human_acknowledged_with_transcript_evidence</td>
       <td class="note">-</td>
     </tr>
-  
+
     <tr>
       <td><code>pc-003</code></td>
       <td>Robert</td>
@@ -194,7 +271,7 @@
       <td class="note">live_human_acknowledged_with_transcript_evidence</td>
       <td class="note">-</td>
     </tr>
-  
+
     <tr>
       <td><code>pc-004</code></td>
       <td>Anita</td>
@@ -205,7 +282,7 @@
       <td class="note">live_human_acknowledged_with_transcript_evidence</td>
       <td class="note">-</td>
     </tr>
-  
+
     <tr>
       <td><code>pc-005</code></td>
       <td>Frank</td>
@@ -216,7 +293,7 @@
       <td class="note">live_human_acknowledged_with_transcript_evidence</td>
       <td class="note">-</td>
     </tr>
-  
+
     <tr>
       <td><code>pc-006</code></td>
       <td>Dolores</td>
@@ -227,7 +304,7 @@
       <td class="note">live_human_acknowledged_with_transcript_evidence</td>
       <td class="note">-</td>
     </tr>
-  
+
     <tr>
       <td><code>pc-007</code></td>
       <td>Henry</td>
@@ -238,7 +315,7 @@
       <td class="note">live_human_acknowledged_with_transcript_evidence</td>
       <td class="note">-</td>
     </tr>
-  
+
     <tr>
       <td><code>pc-008</code></td>
       <td>Grace</td>
@@ -249,7 +326,7 @@
       <td class="note">voicemail_notice_left_not_confirmation</td>
       <td class="note">-</td>
     </tr>
-  
+
     <tr>
       <td><code>pc-009</code></td>
       <td>Walter</td>
@@ -260,7 +337,7 @@
       <td class="note">medical_question_priority_review</td>
       <td class="note">-</td>
     </tr>
-  
+
     <tr>
       <td><code>pc-010</code></td>
       <td>Priya</td>
@@ -271,7 +348,7 @@
       <td class="note">wrong_number_number_retired_for_event</td>
       <td class="note">-</td>
     </tr>
-  
+
     <tr>
       <td><code>pc-011</code></td>
       <td>Colin</td>
@@ -282,7 +359,7 @@
       <td class="note">refused_no_redial</td>
       <td class="note">-</td>
     </tr>
-  
+
     <tr>
       <td><code>pc-012</code></td>
       <td>Tuan</td>
@@ -293,7 +370,7 @@
       <td class="note">unsupported_locale_bilingual_callback</td>
       <td class="note">-</td>
     </tr>
-  
+
   </tbody>
 </table></div>
 </div>
