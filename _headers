@@ -1,0 +1,8 @@
+/*
+  X-Content-Type-Options: nosniff
+  X-Frame-Options: DENY
+  Referrer-Policy: no-referrer
+/healthz/*
+  Content-Type: application/json; charset=utf-8
+/api/v1/status/*
+  Content-Type: application/json; charset=utf-8

@@ -1,0 +1,93 @@
+
+
+<div class="card">
+  <h3>Walter <code>pc-009</code> &middot; step 1 &middot; <code>+1415•••0109</code></h3>
+  <p class="sub">
+    <span class="pill attention">medical_question_priority_review</span>
+    contact_type <strong>live_person</strong> &middot;
+    acknowledged <strong>yes</strong> &middot;
+    needs_assistance <strong>medical_question</strong> &middot;
+    confidence 0.93 (high) &middot;
+    judges agree
+  </p>
+  <p class="note">Judge A <code>live_person/yes:structured_result</code> &middot; Judge B <code>live_person/yes:acknowledgement_in_transcript</code></p>
+  <p class="note">Note for the team: Critical supply support requested; permission recorded. No advice given.</p>
+  
+  <div class="safety"><strong>Safety boundary:</strong> no medical advice. Emergency risk
+    <strong>no</strong>; provider permission
+    <strong>yes</strong>; route
+    <strong>powered_equipment</strong> before_outage.</div>
+  
+  <div class="spans">
+    
+      <div class="span">
+        <div class="who">structured_result</div>
+        <div>contact_type=live_person acknowledged=yes needs_assistance=medical_question</div>
+      </div>
+    
+      <div class="span">
+        <div class="who">transcript_acknowledgement &middot; user &middot; +21s</div>
+        <div>Yes, I heard you. I run an [medical detail removed] [medical detail removed] at night. What am I supposed to do about that?</div>
+      </div>
+    
+  </div>
+  
+</div>
+
+<div class="card">
+  <h3>Priya <code>pc-010</code> &middot; step 1 &middot; <code>+1415•••0110</code></h3>
+  <p class="sub">
+    <span class="pill attention">wrong_number_number_retired_for_event</span>
+    contact_type <strong>wrong_number</strong> &middot;
+    acknowledged <strong>unknown</strong> &middot;
+    needs_assistance <strong>unknown</strong> &middot;
+    confidence 0.90 (high) &middot;
+    judges disagree
+  </p>
+  <p class="note">Judge A <code>wrong_number/unknown:structured_result</code> &middot; Judge B <code>live_person/unknown:live_person_no_acknowledgement_found</code></p>
+  <p class="note">Note for the team: Person who answered says the customer is not at this number.</p>
+  
+  <div class="spans">
+    
+      <div class="span">
+        <div class="who">structured_result</div>
+        <div>contact_type=wrong_number acknowledged=unknown needs_assistance=unknown</div>
+      </div>
+    
+      <div class="span">
+        <div class="who">transcript_last_user_turn &middot; user &middot; +7s</div>
+        <div>There is nobody here by that name. You have the wrong number.</div>
+      </div>
+    
+  </div>
+  
+</div>
+
+<div class="card">
+  <h3>Colin <code>pc-011</code> &middot; step 1 &middot; <code>+1415•••0111</code></h3>
+  <p class="sub">
+    <span class="pill attention">refused_no_redial</span>
+    contact_type <strong>refused</strong> &middot;
+    acknowledged <strong>no</strong> &middot;
+    needs_assistance <strong>unknown</strong> &middot;
+    confidence 0.91 (high) &middot;
+    judges disagree
+  </p>
+  <p class="note">Judge A <code>refused/no:structured_result</code> &middot; Judge B <code>live_person/no:live_person_did_not_acknowledge</code></p>
+  <p class="note">Note for the team: Asked not to be called again about this event.</p>
+  
+  <div class="spans">
+    
+      <div class="span">
+        <div class="who">structured_result</div>
+        <div>contact_type=refused acknowledged=no needs_assistance=unknown</div>
+      </div>
+    
+      <div class="span">
+        <div class="who">transcript_no_acknowledgement &middot; user &middot; +7s</div>
+        <div>I do not want to hear it. Take me off your list and do not call again.</div>
+      </div>
+    
+  </div>
+  
+</div>

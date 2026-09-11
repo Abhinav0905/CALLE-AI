@@ -1,0 +1,246 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PositiveContact - psps-demo-2026-09</title>
+<script src="https://cdn.jsdelivr.net/npm/htmx.org@1.9.12/dist/htmx.min.js"></script>
+<style>
+  :root {
+    color-scheme: light;
+    --ink:#14221d; --paper:#f5f7f3; --surface:#ffffff; --line:#dce4dd;
+    --muted:#617069; --brand:#116149; --brand-dark:#0a4635; --accent:#d7f064;
+    --good:#17603c; --goodbg:#e4f4ea; --wait:#705315; --waitbg:#fff2c9;
+    --attn:#9d3f27; --attnbg:#fff0ea; --truck:#245a8d; --truckbg:#e8f2fb;
+    --shadow:0 12px 34px rgba(20,34,29,.08);
+  }
+  * { box-sizing:border-box; }
+  html { background:var(--paper); }
+  body { margin:0; color:var(--ink); font:14px/1.55 ui-sans-serif, system-ui, -apple-system,
+         BlinkMacSystemFont, "Segoe UI", sans-serif; }
+  a { color:inherit; }
+  .topbar { min-height:64px; padding:12px clamp(18px,4vw,48px); display:flex;
+            justify-content:space-between; gap:18px; align-items:center; background:var(--ink);
+            color:white; }
+  .brand { display:flex; align-items:center; gap:11px; }
+  .brand-mark { width:32px; height:32px; display:grid; place-items:center; border-radius:10px;
+                background:var(--accent); color:var(--ink); font-weight:900; letter-spacing:-.08em; }
+  .brand strong { display:block; font-size:15px; letter-spacing:-.01em; }
+  .brand small { display:block; color:#b9c8c1; font-size:11.5px; }
+  .event-chip { display:flex; align-items:center; gap:8px; color:#d9e5df; font-size:12px; }
+  .event-chip::before { content:""; width:8px; height:8px; border-radius:50%;
+                       background:var(--accent); box-shadow:0 0 0 4px rgba(215,240,100,.12); }
+  nav { padding:0 clamp(18px,4vw,48px); display:flex; gap:4px; overflow-x:auto;
+        border-bottom:1px solid var(--line); background:var(--surface); }
+  nav a { padding:13px 14px 11px; text-decoration:none; color:var(--muted);
+          border-bottom:3px solid transparent; white-space:nowrap; font-weight:650; }
+  nav a:hover { color:var(--brand); }
+  nav a.on { color:var(--brand); border-bottom-color:var(--brand); }
+  main { max-width:1240px; margin:0 auto; padding:28px clamp(18px,4vw,48px) 56px; }
+  .hero { position:relative; overflow:hidden; padding:26px clamp(20px,4vw,36px);
+          margin-bottom:22px; border-radius:20px; color:white;
+          background:linear-gradient(125deg,var(--brand-dark),var(--brand)); box-shadow:var(--shadow); }
+  .hero::after { content:""; position:absolute; width:230px; height:230px; border-radius:50%;
+                 right:-76px; top:-116px; background:rgba(215,240,100,.14); }
+  .eyebrow { margin:0 0 5px; color:var(--accent); text-transform:uppercase; letter-spacing:.12em;
+             font-size:10.5px; font-weight:800; }
+  .hero h1 { max-width:640px; margin:0; font-size:clamp(25px,4vw,40px); line-height:1.08;
+             letter-spacing:-.04em; }
+  .hero-copy { max-width:690px; margin:10px 0 0; color:#dceae4; font-size:13px; }
+  .stats { position:relative; z-index:1; display:grid; grid-template-columns:repeat(5,minmax(100px,1fr));
+           gap:9px; margin-top:22px; }
+  .stat { padding:10px 12px; border:1px solid rgba(255,255,255,.14); border-radius:12px;
+          background:rgba(255,255,255,.08); }
+  .stat strong { display:block; font-size:21px; line-height:1.1; }
+  .stat span { color:#c9ddd4; font-size:10.5px; text-transform:uppercase; letter-spacing:.05em; }
+  .page-heading { display:flex; justify-content:space-between; gap:16px; align-items:flex-end;
+                  margin-bottom:16px; }
+  h2 { margin:0; font-size:20px; letter-spacing:-.025em; }
+  h3 { letter-spacing:-.01em; }
+  .sub { color:var(--muted); font-size:13px; margin:4px 0 0; max-width:780px; }
+  .mode { padding:5px 9px; border-radius:999px; background:var(--surface); border:1px solid var(--line);
+          color:var(--muted); font-size:11px; font-weight:750; text-transform:uppercase; letter-spacing:.06em; }
+  .table-wrap { overflow-x:auto; background:var(--surface); border:1px solid var(--line);
+                border-radius:14px; box-shadow:0 5px 18px rgba(20,34,29,.04); }
+  table { border-collapse:collapse; width:100%; min-width:780px; font-variant-numeric:tabular-nums; }
+  th, td { text-align:left; padding:11px 13px; border-bottom:1px solid var(--line); vertical-align:top; }
+  tbody tr:last-child td { border-bottom:0; }
+  tbody tr:hover { background:#f8faf7; }
+  th { font-size:10.5px; text-transform:uppercase; letter-spacing:.07em; color:var(--muted);
+       font-weight:800; background:#f9faf8; }
+  .pill { display:inline-flex; align-items:center; padding:3px 9px; border-radius:999px;
+          font-size:10.5px; font-weight:800; white-space:nowrap; letter-spacing:.015em; }
+  .good { background:var(--goodbg); color:var(--good); }
+  .waiting { background:var(--waitbg); color:var(--wait); }
+  .attention { background:var(--attnbg); color:var(--attn); }
+  .truck { background:var(--truckbg); color:var(--truck); }
+  .closed { background:transparent; color:var(--muted); border:1px solid var(--line); }
+  .card { background:var(--surface); border:1px solid var(--line); border-radius:15px; padding:18px;
+          margin-bottom:14px; box-shadow:0 5px 18px rgba(20,34,29,.04); }
+  .card h3 { margin:0 0 4px; font-size:15px; }
+  .card-head { display:flex; justify-content:space-between; gap:14px; align-items:flex-start; }
+  .facts { display:flex; flex-wrap:wrap; gap:8px; margin:13px 0; }
+  .fact { padding:7px 9px; border-radius:8px; background:#f4f7f4; color:var(--muted); font-size:11.5px; }
+  .fact strong { color:var(--ink); }
+  .spans { margin:13px 0; }
+  .span { border-left:3px solid #b8c8c0; padding:5px 11px; margin:7px 0; background:#f8faf8; }
+  .span .who { color:var(--muted); font-size:11px; }
+  form.inline { display:flex; flex-wrap:wrap; gap:10px; align-items:flex-end; margin-top:12px;
+                padding-top:12px; border-top:1px solid var(--line); }
+  .field { display:flex; flex:1 1 180px; flex-direction:column; gap:4px; color:var(--muted);
+           font-size:11.5px; font-weight:700; }
+  .field.grow { flex-basis:300px; }
+  input[type=text], input[type=password], select { width:100%; min-height:39px; padding:8px 10px;
+          border:1px solid #bfcac4; border-radius:8px; background:white; color:var(--ink); font:inherit; }
+  .check { display:flex; flex:1 1 100%; gap:8px; align-items:flex-start; color:var(--ink); font-size:12px; }
+  button { min-height:39px; padding:8px 14px; border:1px solid var(--brand); border-radius:8px;
+           cursor:pointer; background:var(--brand); color:white; font-weight:750; }
+  button:hover { background:var(--brand-dark); }
+  button.ghost { background:white; color:var(--brand); }
+  button:focus-visible, input:focus-visible, select:focus-visible, a:focus-visible {
+    outline:3px solid rgba(17,97,73,.25); outline-offset:2px;
+  }
+  .banner { border:1px solid #ecd58d; border-radius:10px; padding:10px 13px; margin-bottom:15px;
+            background:var(--waitbg); color:var(--wait); }
+  .safety { border-left:4px solid var(--brand); padding:9px 12px; margin:12px 0;
+            background:#edf6f1; color:#305c4d; font-size:12.5px; }
+  .note { color:var(--muted); font-size:12.5px; }
+  code { font:12px ui-monospace, SFMono-Regular, Menlo, monospace; }
+  pre { overflow-x:auto; border:1px solid var(--line); border-radius:10px; padding:12px;
+        background:#f9faf8; font:12px ui-monospace, SFMono-Regular, Menlo, monospace; }
+  .empty { color:var(--muted); padding:28px; text-align:center; background:var(--surface);
+           border:1px dashed #bcc8c1; border-radius:14px; }
+  @media (max-width:760px) {
+    .event-chip { display:none; }
+    .stats { grid-template-columns:repeat(2,1fr); }
+    .stat:last-child { grid-column:1/-1; }
+    .page-heading, .card-head { align-items:flex-start; flex-direction:column; }
+  }
+</style>
+</head>
+<body>
+<header class="topbar">
+  <div class="brand">
+    <span class="brand-mark" aria-hidden="true">PC</span>
+    <div><strong>PositiveContact</strong><small>Outage care operations</small></div>
+  </div>
+  <div class="event-chip">Northbay Power · psps-demo-2026-09</div>
+</header>
+<nav aria-label="Operator sections">
+  <a href="/CALLE-AI/board" class="">Contact ladder</a>
+  <a href="/CALLE-AI/review" class="">Human review</a>
+  <a href="/CALLE-AI/support" class="">Support desk</a>
+  <a href="/CALLE-AI/reports" class="on">Evidence report</a>
+</nav>
+<main>
+  <section class="hero" aria-labelledby="mission-title">
+    <p class="eyebrow">PSPS mission control · safe fixture</p>
+    <h1 id="mission-title">Every warning heard. Every support request owned.</h1>
+    <p class="hero-copy">CALL-E handles the conversation. Operators keep control of consent,
+      supplier calls, field visits and the evidence behind every decision.</p>
+    <div class="stats" aria-label="Event summary">
+      <div class="stat"><strong>12</strong><span>In scope</span></div>
+      <div class="stat"><strong>7</strong><span>Confirmed</span></div>
+      <div class="stat"><strong>3</strong><span>Human review</span></div>
+      <div class="stat"><strong>0</strong><span>Support open</span></div>
+      <div class="stat"><strong>1</strong><span>Visits pending</span></div>
+    </div>
+  </section>
+
+  <div class="banner" role="status"><strong>Read-only public demo.</strong> Operator actions
+    are disabled. Run on localhost or configure <code>PC_OPERATOR_TOKEN</code> to enable them.</div>
+
+
+<div class="page-heading"><div><h2>Evidence report</h2>
+<p class="sub">Every count carries the denominator it was measured against. Confirmed comes from a
+CONFIRMED disposition or an operator confirmation with evidence, never from a completed call.</p></div>
+<span class="mode">audit ready</span></div>
+<div hx-get="/CALLE-AI/reports/table" hx-trigger="every 5s" hx-swap="innerHTML">
+  <div class="table-wrap"><table>
+  <thead><tr><th>Metric</th><th>Value</th><th>Denominator</th></tr></thead>
+  <tbody>
+  
+    <tr><td>Enrolled contacts in scope</td><td><strong>12</strong></td>
+        <td class="note">-</td></tr>
+  
+    <tr><td>Contacts attempted</td><td><strong>11</strong></td>
+        <td class="note">of 12 in scope</td></tr>
+  
+    <tr><td>Live human reached</td><td><strong>9</strong></td>
+        <td class="note">of 11 attempted</td></tr>
+  
+    <tr><td>Positive contact confirmed</td><td><strong>7</strong></td>
+        <td class="note">of 9 live reached</td></tr>
+  
+    <tr><td>  confirmed by the adjudicator</td><td><strong>7</strong></td>
+        <td class="note">of 7 confirmed</td></tr>
+  
+    <tr><td>  confirmed by an operator with evidence</td><td><strong>0</strong></td>
+        <td class="note">of 7 confirmed</td></tr>
+  
+    <tr><td>Voicemail only</td><td><strong>1</strong></td>
+        <td class="note">of 11 attempted</td></tr>
+  
+    <tr><td>Unreached (no answer / busy after ladder)</td><td><strong>0</strong></td>
+        <td class="note">of 11 attempted</td></tr>
+  
+    <tr><td>Wrong number</td><td><strong>1</strong></td>
+        <td class="note">of 11 attempted</td></tr>
+  
+    <tr><td>Refused</td><td><strong>1</strong></td>
+        <td class="note">of 9 live reached</td></tr>
+  
+    <tr><td>Language not supported, bilingual callback opened</td><td><strong>1</strong></td>
+        <td class="note">of 12 in scope, never dialled</td></tr>
+  
+    <tr><td>Language barrier discovered on the call</td><td><strong>0</strong></td>
+        <td class="note">of 11 attempted</td></tr>
+  
+    <tr><td>Needs-human items open</td><td><strong>3</strong></td>
+        <td class="note">-</td></tr>
+  
+    <tr><td>Field visits pending approval / issued</td><td><strong>1 / 0</strong></td>
+        <td class="note">-</td></tr>
+  
+    <tr><td>Calls placed</td><td><strong>16</strong></td>
+        <td class="note">-</td></tr>
+  
+    <tr><td>Median attempts per confirmed contact</td><td><strong>1</strong></td>
+        <td class="note">over 7 confirmed</td></tr>
+  
+    <tr><td>Time to confirmation p50 / p90</td><td><strong>0 min / 45 min</strong></td>
+        <td class="note">over 7 confirmed</td></tr>
+  
+  </tbody>
+</table></div>
+</div>
+
+<h2 style="margin-top:26px">Field visits</h2>
+<p class="sub">The system prepares a work order. A person dispatches it.</p>
+
+
+<div class="card">
+  <h3>pc-008
+    <span class="pill truck">pending approval</span>
+  </h3>
+  <p class="note">
+    Grace &middot;
+    <code>+1415•••0108</code> &middot;
+    760 block of Alder Rd<br>
+    reason <code>max_calls_per_contact_reached</code> &middot; prepared 2026-09-11T18:45:00+00:00
+    
+  </p>
+  
+</div>
+
+
+
+
+
+<h2 style="margin-top:26px">Notes</h2>
+<ul class="note"><li>Confirmed counts a contact only when a disposition of CONFIRMED was recorded, or an operator confirmed it and cited evidence. It is never inferred from a completed call.</li><li>Contacts routed for an unsupported locale were never dialled, so they are reported against contacts in scope rather than against contacts attempted.</li><li>Live human reached counts a live person, a refusal, and a language barrier discovered on the call, because each of those means somebody answered. A wrong number is excluded: it reached somebody, but not the enrolled customer.</li><li>3 needs-human item(s) remain open. Open items still count against the field-visit cutoff.</li></ul>
+
+
+</main>
+</body>
+</html>
