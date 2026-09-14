@@ -19,7 +19,7 @@ from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 # From the CALL-E OpenAPI contract, CallTaskRecipientRequest.phones.items.pattern.
 # Numbers are validated against this and never repaired.
-E164_RE = re.compile(r"^\+[1-9]\d{6,14}$")
+E164_RE = re.compile(r"\+[1-9][0-9]{6,14}")
 
 # Idempotency-Key header bound from the contract (minLength 1, maxLength 255).
 IDEMPOTENCY_KEY_MAX_LENGTH = 255
@@ -223,7 +223,7 @@ def derive_intent_id(
 
 def validate_e164(value: str) -> str:
     """Return `value` unchanged if it is E.164, else raise. Never repairs a number."""
-    if not isinstance(value, str) or not E164_RE.match(value):
+    if not isinstance(value, str) or not E164_RE.fullmatch(value):
         raise ValueError(
             "phone number must already be E.164 (a leading plus, country code, then digits); "
             "PositiveContact rejects malformed numbers instead of repairing them"

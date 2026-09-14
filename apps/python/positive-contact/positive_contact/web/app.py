@@ -20,7 +20,7 @@ from pathlib import Path
 from urllib.parse import urlsplit
 
 from fastapi import Depends, FastAPI, Form, HTTPException, Request, status
-from fastapi.responses import HTMLResponse, RedirectResponse
+from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
 from fastapi.templating import Jinja2Templates
 
@@ -32,7 +32,7 @@ from ..escalate import (
     sweep_cutoff,
 )
 from ..dispatch import BudgetExceeded, dispatch_intent
-from ..intake import WebhookReceiver, build_router, poll_pending, process_inbox
+from ..intake import WEBHOOK_PATH, WebhookReceiver, build_router, poll_pending, process_inbox
 from ..ledger import Ledger, LedgerError
 from ..models import Event, IntentState
 from ..policy import Policy
@@ -214,6 +214,7 @@ def create_app(
     live_mode: bool = False,
     live_verifications: Sequence[Mapping[str, object]] = (),
     operator_token: str | None = None,
+    public_fixture: bool = False,
     worker_interval_seconds: int = DEFAULT_WORKER_INTERVAL_SECONDS,
 ) -> FastAPI:
     """Build the operator dashboard, the webhook receiver, and the worker that drains it.
@@ -233,10 +234,15 @@ def create_app(
     security = HTTPBasic(auto_error=False)
     configured_token = operator_token or os.environ.get("PC_OPERATOR_TOKEN")
 
+    if public_fixture and (live_mode or transport is not None):
+        raise ValueError("public fixture views cannot have a live mode or transport")
+
     async def require_operator(
         request: Request,
         credentials: HTTPBasicCredentials | None = Depends(security),
     ) -> None:
+        if public_fixture:
+            raise HTTPException(status_code=503, detail="public fixture is read-only")
         origin = request.headers.get("origin")
         if origin and urlsplit(origin).hostname != request.url.hostname:
             raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="cross-origin action denied")
@@ -252,11 +258,30 @@ def create_app(
                     headers={"WWW-Authenticate": "Basic"},
                 )
             return
-        if request.url.hostname not in LOCAL_HOSTS:
+        if (
+            request.url.hostname not in LOCAL_HOSTS
+            or request.client is None
+            or request.client.host not in {"127.0.0.1", "::1", "testclient"}
+        ):
             raise HTTPException(
                 status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
                 detail="set PC_OPERATOR_TOKEN before enabling actions on a public host",
             )
+
+    @app.middleware("http")
+    async def protect_operator_records(request: Request, call_next):
+        # The separate synthetic deployment is read-only and holds no live ledger.
+        if public_fixture and request.method in {"GET", "HEAD"}:
+            return await call_next(request)
+        # The webhook is inert until a provider-authenticated GET verifies its body.
+        if not public_fixture and request.url.path == WEBHOOK_PATH:
+            return await call_next(request)
+        try:
+            await require_operator(request, await security(request))
+        except HTTPException as exc:
+            return JSONResponse({"detail": exc.detail}, status_code=exc.status_code,
+                                headers=exc.headers)
+        return await call_next(request)
 
     async def worker() -> None:
         while True:
@@ -292,7 +317,7 @@ def create_app(
 
     def context(request: Request, **extra) -> dict:
         actions_enabled = bool(
-            configured_token or request.url.hostname in LOCAL_HOSTS
+            not public_fixture and (configured_token or request.url.hostname in LOCAL_HOSTS)
         )
         base = {
             "request": request,

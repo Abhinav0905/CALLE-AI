@@ -110,6 +110,7 @@ def build_demo_app(db_path: Path | str):
         policy,
         transport=None,
         live_mode=False,
+        public_fixture=True,
         live_verifications=PUBLIC_LIVE_VERIFICATIONS,
     )
 

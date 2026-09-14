@@ -328,6 +328,9 @@ by `fixture` or `replay` mode. The whole test suite runs without it, and a sessi
 fixture makes any outbound connection attempt fail the test that made it.
 
 Set `PC_OPERATOR_TOKEN` before exposing an operator-enabled dashboard outside localhost.
+All private-ledger views and actions require that token remotely; a forged localhost
+Host header does not establish a local connection. Only the separate read-only synthetic
+deployment permits public record views.
 State-changing routes reject cross-origin requests and require HTTP Basic authentication
 on a non-local host. The password is the token; the username is only an operator label.
 
